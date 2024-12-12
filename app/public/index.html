@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webhook Sender</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input, textarea, button {
+            margin: 5px 0;
+            display: block;
+            width: 100%;
+            max-width: 400px;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Enviar un evento al Webhook</h1>
+    <form id="webhookForm">
+        <label for="eventType">Tipo de evento:</label>
+        <input type="text" id="eventType" placeholder="Ejemplo: 'user.signup'" required>
+        
+        <label for="eventData">Datos del evento (JSON):</label>
+        <textarea id="eventData" rows="5" placeholder='{"key": "value"}'></textarea>
+        
+        <button type="submit">Enviar al Webhook</button>
+    </form>
+
+    <div id="response">
+        <h3>Respuesta:</h3>
+        <pre id="responseText">La respuesta aparecerá aquí.</pre>
+    </div>
+
+    <script>
+        document.getElementById("webhookForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const eventType = document.getElementById("eventType").value;
+            const eventData = document.getElementById("eventData").value;
+
+            try {
+                const response = await fetch("/webhook", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        type: eventType,
+                        data: JSON.parse(eventData || "{}"),
+                    }),
+                });
+                const result = await response.json();
+                document.getElementById("responseText").innerText = JSON.stringify(result, null, 2);
+            } catch (error) {
+                document.getElementById("responseText").innerText = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
