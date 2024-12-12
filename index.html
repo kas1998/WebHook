@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GraphQL API Client</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input, button {
+            margin: 5px 0;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cliente GraphQL para la API</h1>
+    <div>
+        <h3>Consulta simple:</h3>
+        <button onclick="fetchHello()">Obtener 'hello'</button>
+        <h3>Consulta con parámetros:</h3>
+        <input type="text" id="nameInput" placeholder="Introduce un nombre">
+        <button onclick="fetchGreet()">Enviar saludo</button>
+    </div>
+    <div id="response">
+        <h3>Respuesta:</h3>
+        <pre id="responseText">La respuesta aparecerá aquí.</pre>
+    </div>
+
+    <script>
+        const GRAPHQL_ENDPOINT = "/graphql";
+
+        // Función para realizar una consulta simple
+        async function fetchHello() {
+            const query = `{
+                hello
+            }`;
+            const response = await sendGraphQLQuery(query);
+            document.getElementById("responseText").innerText = JSON.stringify(response, null, 2);
+        }
+
+        // Función para realizar una consulta con parámetros
+        async function fetchGreet() {
+            const name = document.getElementById("nameInput").value || "mundo";
+            const query = `{
+                greet(name: "${name}")
+            }`;
+            const response = await sendGraphQLQuery(query);
+            document.getElementById("responseText").innerText = JSON.stringify(response, null, 2);
+        }
+
+        // Función genérica para enviar una consulta GraphQL
+        async function sendGraphQLQuery(query) {
+            const response = await fetch(GRAPHQL_ENDPOINT, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ query })
+            });
+            return response.json();
+        }
+    </script>
+</body>
+</html>
